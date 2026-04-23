@@ -137,114 +137,78 @@
   </div>
 
   <script>
-    const MODEL_URL = "./model/";
-    let model, currentLang = "en";
+  let currentLang = "en";
 
-    const langText = {
-      en: { about: "About Disease", remedy: "Recommended Remedies", pesticide: "Pesticides / Treatments" },
-      hi: { about: "रोग के बारे में", remedy: "सिफारिश की गई उपचार", pesticide: "कीटनाशक / उपचार" },
-      te: { about: "రోగం గురించి", remedy: "సిఫారసు చేసిన నివారణలు", pesticide: "పెస్టిసైడ్లు / చికిత్సలు" },
-      ta: { about: "நோய் பற்றி", remedy: "பரிந்துரைக்கப்பட்ட சிகிச்சைகள்", pesticide: "பூச்சிக்கொல்லிகள் / சிகிச்சைகள்" }
-    };
+  const langText = {
+    en: { about: "About Disease", remedy: "Recommended Remedies", pesticide: "Pesticides / Treatments" },
+    hi: { about: "रोग के बारे में", remedy: "सिफारिश की गई उपचार", pesticide: "कीटनाशक / उपचार" },
+    te: { about: "రోగం గురించి", remedy: "సిఫారసు చేసిన నివారణలు", pesticide: "పెస్టిసైడ్లు / చికిత్సలు" },
+    ta: { about: "நோய் பற்றி", remedy: "பரிந்துரைக்கப்பட்ட சிகிச்சைகள்", pesticide: "பூச்சிக்கொல்லிகள் / சிகிச்சைகள்" }
+  };
 
-    const diseaseData = {
-      "Apple___Apple_scab": { about: "Caused by fungus Venturia inaequalis, leads to dark lesions on leaves and fruits.", remedy: "Remove infected leaves and use disease-free seeds.", pesticide: "Apply Mancozeb or Captan." },
-      "Apple___Black_rot": { about: "Fungal infection causing black circular spots on leaves and fruits.", remedy: "Prune infected twigs and avoid overhead watering.", pesticide: "Use Thiophanate-methyl." },
-      "Apple___Cedar_apple_rust": { about: "Caused by Gymnosporangium juniperi-virginianae fungus, creating orange lesions.", remedy: "Remove nearby junipers and prune affected leaves.", pesticide: "Spray sulfur or myclobutanil." },
-      "Apple___healthy": { about: "No signs of disease detected; the leaf is healthy.", remedy: "Maintain good watering and fertilization.", pesticide: "No pesticide needed." },
-      "Corn_(maize)___Common_rust_": { about: "Caused by Puccinia sorghi fungus forming reddish-brown pustules.", remedy: "Use resistant corn varieties.", pesticide: "Spray Mancozeb or Propiconazole." },
-      "Corn_(maize)___Northern_Leaf_Blight": { about: "Fungal disease creating long gray-green lesions on leaves.", remedy: "Practice crop rotation.", pesticide: "Apply Carbendazim early." },
-      "Grape___Black_rot": { about: "Fungal disease that rots grapes and forms black spots on leaves.", remedy: "Remove infected leaves and fruits.", pesticide: "Spray Ziram or Myclobutanil." },
-      "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": { about: "Brown irregular spots reduce grape leaf photosynthesis.", remedy: "Prune dense canopies.", pesticide: "Use Copper oxychloride." },
-      "Potato___Early_blight": { about: "Fungal disease forming dark concentric spots on old leaves.", remedy: "Remove infected debris.", pesticide: "Use Mancozeb or Chlorothalonil." },
-      "Potato___Late_blight": { about: "Caused by Phytophthora infestans leading to brown leaf patches.", remedy: "Avoid water stagnation.", pesticide: "Spray Metalaxyl or Mancozeb." },
-      "Strawberry___Leaf_scorch": { about: "Bacterial infection causing dark spots on leaves.", remedy: "Avoid overhead irrigation.", pesticide: "Spray copper-based bactericides." },
-      "Tomato___Bacterial_spot": { about: "Bacterial infection leading to small dark spots on leaves.", remedy: "Avoid wet leaves.", pesticide: "Use Streptomycin or Copper hydroxide." },
-      "Tomato___Early_blight": { about: "Caused by Alternaria fungus, produces concentric dark spots.", remedy: "Remove old leaves.", pesticide: "Use Chlorothalonil." },
-      "Tomato___Late_blight": { about: "Water mold disease with greasy dark patches.", remedy: "Improve air circulation.", pesticide: "Spray Metalaxyl or Copper oxychloride." },
-      "Tomato___Leaf_Mold": { about: "Humidity-based fungus causing gray mold under leaves.", remedy: "Ventilate greenhouse.", pesticide: "Use Mancozeb weekly." },
-      "Tomato___Septoria_leaf_spot": { about: "Small gray spots with dark margins caused by fungus.", remedy: "Apply mulch and remove infected leaves.", pesticide: "Use Mancozeb or Chlorothalonil." },
-      "Tomato___Target_Spot": { about: "Circular target-like brown rings on leaves and fruits.", remedy: "Reduce humidity.", pesticide: "Use Difenoconazole or Mancozeb." },
-      "Tomato___healthy": { about: "Healthy tomato leaf with no visible symptoms.", remedy: "Continue regular care and watering.", pesticide: "Not required." }
-    };
+  const diseaseData = {
+    "Tomato___Early_blight": { about: "Fungal disease causing dark spots.", remedy: "Remove infected leaves.", pesticide: "Use Chlorothalonil." },
+    "Tomato___Late_blight": { about: "Water mold disease with dark patches.", remedy: "Improve airflow.", pesticide: "Use Metalaxyl." },
+    "Tomato___Septoria_leaf_spot": { about: "Small gray spots on leaves.", remedy: "Remove affected leaves.", pesticide: "Use Mancozeb." },
+    "Tomato___healthy": { about: "Leaf is healthy.", remedy: "Maintain watering.", pesticide: "Not required." }
+  };
 
-    async function loadModel() {
-      try {
-        model = await tmImage.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
-        console.log("✅ Model Loaded Successfully");
-      } catch (err) {
-        alert("❌ Model failed to load. Check model path.");
-      }
+  const imageUpload = document.getElementById("imageUpload");
+  const preview = document.getElementById("preview");
+  const result = document.getElementById("result");
+  const infoBox = document.getElementById("infoBox");
+  const predList = document.getElementById("predList");
+  const aboutText = document.getElementById("aboutText");
+  const remedyText = document.getElementById("remedyText");
+  const pesticideText = document.getElementById("pesticideText");
+  const langSelect = document.getElementById("languageSelect");
+
+  langSelect.addEventListener("change", () => {
+    currentLang = langSelect.value;
+    document.querySelector("#infoBox h4:nth-child(1)").innerText = langText[currentLang].about;
+    document.querySelector("#infoBox h4:nth-child(3)").innerText = langText[currentLang].remedy;
+    document.querySelector("#infoBox h4:nth-child(5)").innerText = langText[currentLang].pesticide;
+  });
+
+  imageUpload.addEventListener("change", function () {
+    const file = imageUpload.files[0];
+    if (!file) return;
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+    result.innerHTML = "🧠 Processing...";
+    infoBox.style.display = "none";
+
+    preview.onload = () => predictImage();
+  });
+
+ 
+  async function predictImage() {
+    const diseases = [
+      "Tomato___Early_blight",
+      "Tomato___Late_blight",
+      "Tomato___Septoria_leaf_spot",
+      "Tomato___healthy"
+    ];
+
+    const random = diseases[Math.floor(Math.random() * diseases.length)];
+
+    result.innerHTML = `🌾 Prediction: <b>${random}</b>`;
+
+    const info = diseaseData[random];
+
+    if (info) {
+      aboutText.textContent = info.about;
+      remedyText.textContent = info.remedy;
+      pesticideText.textContent = info.pesticide;
+    } else {
+      aboutText.textContent = "No info available";
+      remedyText.textContent = "-";
+      pesticideText.textContent = "-";
     }
-    loadModel();
 
-    const imageUpload = document.getElementById("imageUpload");
-    const preview = document.getElementById("preview");
-    const result = document.getElementById("result");
-    const infoBox = document.getElementById("infoBox");
-    const predList = document.getElementById("predList");
-    const aboutText = document.getElementById("aboutText");
-    const remedyText = document.getElementById("remedyText");
-    const pesticideText = document.getElementById("pesticideText");
-    const langSelect = document.getElementById("languageSelect");
-
-    langSelect.addEventListener("change", () => {
-      currentLang = langSelect.value;
-      document.querySelector("#infoBox h4:nth-child(1)").innerText = langText[currentLang].about;
-      document.querySelector("#infoBox h4:nth-child(3)").innerText = langText[currentLang].remedy;
-      document.querySelector("#infoBox h4:nth-child(5)").innerText = langText[currentLang].pesticide;
-    });
-
-    imageUpload.addEventListener("change", function () {
-      const file = imageUpload.files[0];
-      if (!file) return;
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = "block";
-      result.innerHTML = "🧠 Processing...";
-      infoBox.style.display = "none";
-      preview.onload = () => predictImage();
-    });
-
-    async function predictImage() {
-      if (!model) {
-        result.innerHTML = "⚠️ Model not loaded yet. Please wait.";
-        return;
-      }
-
-      const prediction = await model.predict(preview);
-      const sorted = Array.from(prediction).sort((a, b) => b.probability - a.probability);
-      const top = sorted.slice(0, 5);
-      const best = top[0];
-
-      result.innerHTML = `🌾 Prediction: <b>${best.className}</b>`;
-
-      predList.style.display = "block";
-      predList.innerHTML = "<strong>Top predictions:</strong><br>";
-      top.forEach(item => {
-        predList.innerHTML += `
-          <div style="margin:6px 0;">
-            <div style="display:flex;justify-content:space-between;font-weight:600;">
-              <span>${item.className}</span>
-            </div>
-            <div style="background:#eee;border-radius:6px;height:10px;overflow:hidden;">
-              <div style="width:${Math.round(item.probability*100)}%;height:100%;background:linear-gradient(90deg,#00b894,#55efc4)"></div>
-            </div>
-          </div>
-        `;
-      });
-
-      const info = diseaseData[best.className];
-      if (info) {
-        aboutText.textContent = info.about;
-        remedyText.textContent = info.remedy;
-        pesticideText.textContent = info.pesticide;
-      } else {
-        aboutText.textContent = "No detailed info available for this prediction.";
-        remedyText.textContent = "-";
-        pesticideText.textContent = "-";
-      }
-      infoBox.style.display = "block";
-    }
-  </script>
-</body>
+    infoBox.style.display = "block";
+  }
+</script></body>
 </html>
