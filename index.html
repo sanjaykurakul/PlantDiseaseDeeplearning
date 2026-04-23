@@ -147,10 +147,17 @@
   };
 
   const diseaseData = {
+    // 🍅 TOMATO
     "Tomato___Early_blight": { about: "Fungal disease causing dark spots.", remedy: "Remove infected leaves.", pesticide: "Use Chlorothalonil." },
     "Tomato___Late_blight": { about: "Water mold disease with dark patches.", remedy: "Improve airflow.", pesticide: "Use Metalaxyl." },
     "Tomato___Septoria_leaf_spot": { about: "Small gray spots on leaves.", remedy: "Remove affected leaves.", pesticide: "Use Mancozeb." },
-    "Tomato___healthy": { about: "Leaf is healthy.", remedy: "Maintain watering.", pesticide: "Not required." }
+    "Tomato___healthy": { about: "Leaf is healthy.", remedy: "Maintain watering.", pesticide: "Not required." },
+
+    // 🍎 APPLE
+    "Apple___Apple_scab": { about: "Fungal disease causing dark lesions on leaves.", remedy: "Remove infected leaves.", pesticide: "Use Mancozeb or Captan." },
+    "Apple___Black_rot": { about: "Causes black spots on leaves and fruit.", remedy: "Prune infected parts.", pesticide: "Use Thiophanate-methyl." },
+    "Apple___Cedar_apple_rust": { about: "Creates orange spots on leaves.", remedy: "Remove nearby juniper plants.", pesticide: "Use sulfur spray." },
+    "Apple___healthy": { about: "Leaf is healthy.", remedy: "Maintain proper care.", pesticide: "Not required." }
   };
 
   const imageUpload = document.getElementById("imageUpload");
@@ -183,13 +190,19 @@
     preview.onload = () => predictImage();
   });
 
- 
   async function predictImage() {
     const diseases = [
+      // Tomato
       "Tomato___Early_blight",
       "Tomato___Late_blight",
       "Tomato___Septoria_leaf_spot",
-      "Tomato___healthy"
+      "Tomato___healthy",
+
+      // Apple
+      "Apple___Apple_scab",
+      "Apple___Black_rot",
+      "Apple___Cedar_apple_rust",
+      "Apple___healthy"
     ];
 
     const random = diseases[Math.floor(Math.random() * diseases.length)];
